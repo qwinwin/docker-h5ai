@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     ffmpeg imagemagick zip apache2-utils
 
 # Environments
-ENV TZ='Asia/Seoul'
+ENV TZ='Asia/Shanghai'
 ENV HTPASSWD='false'
 ENV HTPASSWD_USER='guest'
 
