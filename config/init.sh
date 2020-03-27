@@ -10,9 +10,9 @@ echo -e "Variables:
 \\t- HTPASSWD=${HTPASSWD}
 \\t- HTPASSWD_USER=${HTPASSWD_USER}"
 
-if [ "$( grep -rni "$TZ" /etc/php7/conf.d/zzz_custom.ini | wc -l )" -eq 0 ]; then
+if [ "$(grep -rni "$TZ" /etc/php7/conf.d/zzz_custom.ini | wc -l)" -eq 0 ]; then
     msg "Configure timezone for PHP..."
-    echo "$TZ\"" >> /etc/php7/conf.d/zzz_custom.ini
+    echo "$TZ\"" >>/etc/php7/conf.d/zzz_custom.ini
 fi
 
 msg "Make config directories..."
@@ -48,15 +48,15 @@ else
     new_ver=$(head -n 1 $orig_h5ai$options_file | awk '{print $3}' | sed 's/[^0-9]//g')
     pre_ver=$(head -n 1 $conf_h5ai$options_file | awk '{print $3}' | sed 's/[^0-9]//g')
     if [ $new_ver -gt $pre_ver ]; then
-		msg "New version detected. Make existing options.json backup file..."
-		cp $conf_h5ai$options_file /config/$(date '+%Y%m%d_%H%M%S')_options.json.bak
+        msg "New version detected. Make existing options.json backup file..."
+        cp $conf_h5ai$options_file /config/$(date '+%Y%m%d_%H%M%S')_options.json.bak
 
-		msg "Remove existing h5ai files..."
-		rm -rf $conf_h5ai
+        msg "Remove existing h5ai files..."
+        rm -rf $conf_h5ai
 
-		msg "Copy the new version..."
-		cp -arf $orig_h5ai $conf_h5ai
-	fi
+        msg "Copy the new version..."
+        cp -arf $orig_h5ai $conf_h5ai
+    fi
 
     msg "Remove image's default setup files and copy the existing version..."
 fi
@@ -75,7 +75,7 @@ if [ "$HTPASSWD" = "true" ]; then
     if [ ! -f "$conf_htpwd" ]; then
         msg "Create an authenticate account for h5ai website..."
         msg "Please enter a password for user $HTPASSWD_USER"
-        
+
         # Create a new htpasswd file
         htpasswd -c "$conf_htpwd" "$HTPASSWD_USER"
     else
@@ -83,11 +83,11 @@ if [ "$HTPASSWD" = "true" ]; then
     fi
 
     # Patch Nginx server instance
-    if [ "$( grep -rni "auth" /config/nginx/h5ai.conf | wc -l )" -eq 0 ]; then
+    if [ "$(grep -rni "auth" /config/nginx/h5ai.conf | wc -l)" -eq 0 ]; then
         patch -p1 /config/nginx/h5ai.conf -i /h5ai.conf.htpasswd.patch
     fi
 else
-    if [ "$( grep -rni "auth" /config/nginx/h5ai.conf | wc -l )" -gt 0 ]; then
+    if [ "$(grep -rni "auth" /config/nginx/h5ai.conf | wc -l)" -gt 0 ]; then
         msg "HTPASSWD not configured but Nginx server sets. Reverse the patch..."
         patch -R -p1 /config/nginx/h5ai.conf -i /h5ai.conf.htpasswd.patch
     fi
